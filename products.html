@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Products – AgriMerchant</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .products-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 28px;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 32px 24px;
+      align-items: start;
+    }
+    .filters-panel {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      position: sticky;
+      top: 88px;
+    }
+    .filter-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1rem;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .filter-section { margin-bottom: 24px; }
+    .filter-section-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+    }
+    .filter-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 0;
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      transition: color var(--transition);
+    }
+    .filter-option:hover { color: var(--primary); }
+    .filter-option input { accent-color: var(--primary); }
+    .price-inputs { display: flex; gap: 8px; }
+    .price-input {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface2);
+      color: var(--text);
+      font-size: 0.85rem;
+      outline: none;
+    }
+    .price-input:focus { border-color: var(--primary-light); }
+    .products-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .results-count {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+    .sort-select {
+      padding: 8px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--white);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+      cursor: pointer;
+      outline: none;
+    }
+    .mobile-filter-btn {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      background: var(--white);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+    }
+    @media(max-width: 768px) {
+      .products-layout { grid-template-columns: 1fr; padding: 16px; }
+      .filters-panel { display: none; position: fixed; inset: 0; z-index: 1500; border-radius: 0; overflow-y: auto; }
+      .filters-panel.open { display: block; }
+      .mobile-filter-btn { display: flex; }
+      .filter-close-btn {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 16px;
+      }
+    }
+    @media(min-width: 769px) {
+      .filter-close-btn { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">🌿</div>
+      AgriMerchant
+    </a>
+    <div class="nav-search">
+      <span class="nav-search-icon">🔍</span>
+      <input type="text" placeholder="Search products..." id="search-input" oninput="handleSearch(this.value)">
+    </div>
+    <div class="nav-links" id="nav-links-wrap">
+      <a href="index.html" class="nav-link">🏠 Home</a>
+      <a href="products.html" class="nav-link active">🛍️ Products</a>
+      <div id="nav-auth-links" style="display:contents"></div>
+      <a href="cart.html" class="nav-link nav-cart-btn">
+        🛒 Cart
+        <span class="cart-badge" style="display:none">0</span>
+      </a>
+      <button class="dark-toggle">🌙</button>
+    </div>
+    <button class="hamburger" id="hamburger-btn">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="products-layout">
+  <!-- FILTERS SIDEBAR -->
+  <aside class="filters-panel" id="filters-panel">
+    <div class="filter-close-btn">
+      <span class="filter-title">Filters</span>
+      <button onclick="closeFilters()" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--text)">✕</button>
+    </div>
+    <div class="filter-title" style="display:none" id="desktop-filter-title">🔧 Filters</div>
+
+    <div class="filter-section">
+      <div class="filter-section-label">Category</div>
+      <label class="filter-option"><input type="radio" name="cat" value="" checked onchange="applyFilters()"> All Categories</label>
+      <label class="filter-option"><input type="radio" name="cat" value="Fruits" onchange="applyFilters()"> 🍎 Fruits</label>
+      <label class="filter-option"><input type="radio" name="cat" value="Vegetables" onchange="applyFilters()"> 🥕 Vegetables</label>
+      <label class="filter-option"><input type="radio" name="cat" value="Leafy" onchange="applyFilters()"> 🥬 Leafy Greens</label>
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-section-label">Type</div>
+      <label class="filter-option"><input type="checkbox" value="Organic" onchange="applyFilters()"> 🌱 Organic</label>
+      <label class="filter-option"><input type="checkbox" value="Seasonal" onchange="applyFilters()"> ☀️ Seasonal</label>
+      <label class="filter-option"><input type="checkbox" value="Premium" onchange="applyFilters()"> ⭐ Premium</label>
+      <label class="filter-option"><input type="checkbox" value="Fresh" onchange="applyFilters()"> 💧 Fresh</label>
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-section-label">Price Range (₹)</div>
+      <div class="price-inputs">
+        <input type="number" class="price-input" placeholder="Min" id="price-min" oninput="applyFilters()">
+        <input type="number" class="price-input" placeholder="Max" id="price-max" oninput="applyFilters()">
+      </div>
+    </div>
+
+    <button class="btn btn-secondary btn-sm btn-block mt-2" onclick="clearFilters()">Clear All Filters</button>
+  </aside>
+
+  <!-- PRODUCTS MAIN -->
+  <main>
+    <div class="products-header">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <button class="mobile-filter-btn" onclick="openFilters()">⚙️ Filters</button>
+        <span class="results-count" id="results-count">Loading...</span>
+      </div>
+      <select class="sort-select" id="sort-select" onchange="applyFilters()">
+        <option value="">Sort: Default</option>
+        <option value="price-asc">Price: Low to High</option>
+        <option value="price-desc">Price: High to Low</option>
+        <option value="name">Name A-Z</option>
+      </select>
+    </div>
+
+    <div class="category-pills" id="quick-filters">
+      <button class="pill active" onclick="quickFilter('', this)">All</button>
+      <button class="pill" onclick="quickFilter('Fruits', this)">🍎 Fruits</button>
+      <button class="pill" onclick="quickFilter('Vegetables', this)">🥕 Vegetables</button>
+      <button class="pill" onclick="quickFilter('Leafy', this)">🥬 Leafy</button>
+      <button class="pill" onclick="quickFilter('organic', this)">🌱 Organic</button>
+    </div>
+
+    <div class="product-grid" id="product-grid">
+      <div class="spinner-wrap" style="grid-column:1/-1"><div class="spinner"></div></div>
+    </div>
+
+    <div id="no-results" class="empty-state hidden">
+      <span class="empty-icon">🔍</span>
+      <h3>No products found</h3>
+      <p>Try adjusting your filters or search term</p>
+      <button class="btn btn-primary mt-2" onclick="clearFilters()">Clear Filters</button>
+    </div>
+  </main>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-bottom"><p>© 2024 AgriMerchant. Made with 💚 for Indian Farmers.</p></div>
+  </div>
+</footer>
+
+<script src="utils.js"></script>
+<script>
+  let allProducts = [];
+  let searchQuery = '';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    allProducts = getProducts();
+    // Check URL params
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get('q');
+    const cat = params.get('cat');
+    const badge = params.get('badge');
+    if (q) {
+      searchQuery = q;
+      document.getElementById('search-input').value = q;
+    }
+    if (cat) {
+      const radios = document.querySelectorAll('input[name="cat"]');
+      radios.forEach(r => { if (r.value === cat) { r.checked = true; } });
+    }
+    if (badge) {
+      const checks = document.querySelectorAll('input[type="checkbox"]');
+      checks.forEach(c => { if (c.value === badge) c.checked = true; });
+    }
+    applyFilters();
+    document.getElementById('desktop-filter-title').style.display = 'block';
+  });
+
+  function handleSearch(val) {
+    searchQuery = val.toLowerCase();
+    applyFilters();
+  }
+
+  function quickFilter(cat, btn) {
+    document.querySelectorAll('#quick-filters .pill').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    if (cat === 'organic') {
+      // Check organic checkbox
+      document.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
+      document.querySelector('input[value="Organic"]').checked = true;
+      document.querySelectorAll('input[name="cat"]')[0].checked = true;
+    } else {
+      document.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
+      const radios = document.querySelectorAll('input[name="cat"]');
+      radios.forEach(r => r.checked = r.value === cat);
+    }
+    applyFilters();
+  }
+
+  function applyFilters() {
+    let filtered = [...allProducts];
+
+    // Search
+    if (searchQuery) {
+      filtered = filtered.filter(p =>
+        p.name.toLowerCase().includes(searchQuery) ||
+        p.category.toLowerCase().includes(searchQuery) ||
+        p.vendorName.toLowerCase().includes(searchQuery)
+      );
+    }
+
+    // Category filter
+    const catSelected = document.querySelector('input[name="cat"]:checked')?.value;
+    if (catSelected) filtered = filtered.filter(p => p.category === catSelected);
+
+    // Badge checkboxes
+    const checkedBadges = [...document.querySelectorAll('input[type="checkbox"]:checked')].map(c => c.value);
+    if (checkedBadges.length) filtered = filtered.filter(p => checkedBadges.includes(p.badge));
+
+    // Price range
+    const minP = parseFloat(document.getElementById('price-min').value) || 0;
+    const maxP = parseFloat(document.getElementById('price-max').value) || Infinity;
+    filtered = filtered.filter(p => p.price >= minP && p.price <= maxP);
+
+    // Sort
+    const sort = document.getElementById('sort-select').value;
+    if (sort === 'price-asc') filtered.sort((a, b) => a.price - b.price);
+    else if (sort === 'price-desc') filtered.sort((a, b) => b.price - a.price);
+    else if (sort === 'name') filtered.sort((a, b) => a.name.localeCompare(b.name));
+
+    renderProducts(filtered);
+  }
+
+  function renderProducts(products) {
+    const grid = document.getElementById('product-grid');
+    const noRes = document.getElementById('no-results');
+    const count = document.getElementById('results-count');
+    count.textContent = `${products.length} product${products.length !== 1 ? 's' : ''} found`;
+    if (!products.length) {
+      grid.innerHTML = '';
+      noRes.classList.remove('hidden');
+    } else {
+      noRes.classList.add('hidden');
+      grid.innerHTML = products.map(p => renderProductCard(p)).join('');
+    }
+  }
+
+  function clearFilters() {
+    searchQuery = '';
+    document.getElementById('search-input').value = '';
+    document.querySelectorAll('input[name="cat"]')[0].checked = true;
+    document.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
+    document.getElementById('price-min').value = '';
+    document.getElementById('price-max').value = '';
+    document.getElementById('sort-select').value = '';
+    document.querySelectorAll('#quick-filters .pill').forEach((p,i) => p.classList.toggle('active', i===0));
+    applyFilters();
+  }
+
+  function openFilters() { document.getElementById('filters-panel').classList.add('open'); }
+  function closeFilters() { document.getElementById('filters-panel').classList.remove('open'); }
+</script>
+</body>
+</html>

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgriMerchant – Fresh From Farm to You</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .categories-scroll {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 16px;
+      margin-bottom: 0;
+    }
+    .cat-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all var(--transition);
+      box-shadow: var(--shadow-sm);
+      text-decoration: none;
+      display: block;
+    }
+    .cat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary-light);
+      background: var(--primary-pale);
+    }
+    .cat-icon { font-size: 2rem; margin-bottom: 8px; }
+    .cat-name { font-size: 0.82rem; font-weight: 600; color: var(--text); }
+    .cat-count { font-size: 0.72rem; color: var(--text-muted); }
+
+    .trust-strip {
+      background: var(--primary-pale);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 24px;
+    }
+    .trust-items {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      gap: 48px;
+      flex-wrap: wrap;
+    }
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+    .trust-item span { font-size: 1.3rem; }
+
+    .vendor-cta {
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      border-radius: var(--radius-xl);
+      padding: 48px 40px;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      overflow: hidden;
+      position: relative;
+    }
+    .vendor-cta::before {
+      content: '🌾';
+      position: absolute;
+      right: 40px;
+      bottom: -10px;
+      font-size: 8rem;
+      opacity: 0.15;
+    }
+    .vendor-cta h2 {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+    .vendor-cta p { opacity: 0.85; max-width: 400px; font-size: 0.95rem; }
+    .btn-white {
+      background: white;
+      color: var(--primary-dark);
+      font-weight: 700;
+      padding: 12px 28px;
+      border-radius: 50px;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 20px;
+      transition: all var(--transition);
+      font-family: var(--font-body);
+    }
+    .btn-white:hover { transform: scale(1.05); box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+
+    @media(max-width: 640px) {
+      .vendor-cta { flex-direction: column; text-align: center; }
+      .vendor-cta::before { display: none; }
+      .trust-items { gap: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">🌿</div>
+      AgriMerchant
+    </a>
+    <div class="nav-search">
+      <span class="nav-search-icon">🔍</span>
+      <input type="text" placeholder="Search fruits, vegetables..." id="nav-search-input" oninput="navSearch(this.value)">
+    </div>
+    <div class="nav-links" id="nav-links-wrap">
+      <a href="index.html" class="nav-link active">🏠 Home</a>
+      <a href="products.html" class="nav-link">🛍️ Products</a>
+      <div id="nav-auth-links" class="flex items-center gap-2" style="display:contents"></div>
+      <a href="cart.html" class="nav-link nav-cart-btn">
+        🛒 Cart
+        <span class="cart-badge" style="display:none">0</span>
+      </a>
+      <button class="dark-toggle">🌙</button>
+    </div>
+    <button class="hamburger" id="hamburger-btn">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-tag">🌱 100% Farm Fresh</div>
+    <h1>Fresh <span>Produce</span> Delivered From Local Farmers</h1>
+    <p>Support Indian farmers. Get farm-fresh fruits & vegetables delivered to your doorstep.</p>
+    <div class="hero-search">
+      <input type="text" placeholder="Search mangoes, tomatoes, spinach..." id="hero-search-input">
+      <button onclick="heroSearch()">Search</button>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST STRIP -->
+<div class="trust-strip">
+  <div class="trust-items">
+    <div class="trust-item"><span>🌿</span> 100% Organic Options</div>
+    <div class="trust-item"><span>🚚</span> Same Day Delivery</div>
+    <div class="trust-item"><span>👨‍🌾</span> 200+ Local Farmers</div>
+    <div class="trust-item"><span>✅</span> Quality Guaranteed</div>
+    <div class="trust-item"><span>💰</span> Best Farm Prices</div>
+  </div>
+</div>
+
+<!-- CATEGORIES -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Shop by <span>Category</span></h2>
+      <a href="products.html" class="see-all">View All →</a>
+    </div>
+    <div class="categories-scroll">
+      <a href="products.html?cat=Fruits" class="cat-card">
+        <div class="cat-icon">🍎</div>
+        <div class="cat-name">Fruits</div>
+        <div class="cat-count">Fresh & Seasonal</div>
+      </a>
+      <a href="products.html?cat=Vegetables" class="cat-card">
+        <div class="cat-icon">🥕</div>
+        <div class="cat-name">Vegetables</div>
+        <div class="cat-count">Farm Fresh</div>
+      </a>
+      <a href="products.html?cat=Leafy" class="cat-card">
+        <div class="cat-icon">🥬</div>
+        <div class="cat-name">Leafy Greens</div>
+        <div class="cat-count">Organic</div>
+      </a>
+      <a href="products.html?badge=Organic" class="cat-card">
+        <div class="cat-icon">🌱</div>
+        <div class="cat-name">Organic</div>
+        <div class="cat-count">Certified</div>
+      </a>
+      <a href="products.html?badge=Seasonal" class="cat-card">
+        <div class="cat-icon">☀️</div>
+        <div class="cat-name">Seasonal</div>
+        <div class="cat-count">Limited Stock</div>
+      </a>
+      <a href="products.html?badge=Premium" class="cat-card">
+        <div class="cat-icon">⭐</div>
+        <div class="cat-name">Premium</div>
+        <div class="cat-count">Top Quality</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURED PRODUCTS -->
+<section class="section" style="background: var(--surface2); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">🔥 Today's <span>Fresh Picks</span></h2>
+      <a href="products.html" class="see-all">See All →</a>
+    </div>
+    <div class="product-grid" id="featured-grid">
+      <div class="spinner-wrap"><div class="spinner"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- VENDOR CTA -->
+<section class="section">
+  <div class="container">
+    <div class="vendor-cta">
+      <div>
+        <h2>Are You a Farmer?</h2>
+        <p>Join thousands of local farmers selling directly to customers. No middlemen. Better prices. More profit.</p>
+        <a href="register.html?role=vendor" class="btn-white">Start Selling Today →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ALL PRODUCTS -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">All <span>Products</span></h2>
+    </div>
+    <div class="category-pills" id="filter-pills">
+      <button class="pill active" onclick="filterProducts('', this)">All</button>
+      <button class="pill" onclick="filterProducts('Fruits', this)">🍎 Fruits</button>
+      <button class="pill" onclick="filterProducts('Vegetables', this)">🥕 Vegetables</button>
+      <button class="pill" onclick="filterProducts('Leafy', this)">🥬 Leafy</button>
+    </div>
+    <div class="product-grid" id="all-products-grid">
+      <div class="spinner-wrap"><div class="spinner"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <h3>🌿 AgriMerchant</h3>
+        <p style="font-size:0.85rem;margin-top:6px;">Connecting local farmers with urban consumers. Fresh, organic, and affordable produce.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="products.html">Products</a></li>
+          <li><a href="cart.html">Cart</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Account</h4>
+        <ul>
+          <li><a href="login.html">Login</a></li>
+          <li><a href="register.html">Register</a></li>
+          <li><a href="register.html?role=vendor">Sell on AgriMerchant</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Support</h4>
+        <ul>
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">Track Order</a></li>
+          <li><a href="#">Contact Us</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2024 AgriMerchant. Made with 💚 for Indian Farmers.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="utils.js"></script>
+<script>
+  let allProducts = [];
+  let currentFilter = '';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    allProducts = getProducts();
+    renderFeatured();
+    renderAllProducts('');
+  });
+
+  function renderFeatured() {
+    const grid = document.getElementById('featured-grid');
+    const featured = allProducts.slice(0, 6);
+    if (!featured.length) {
+      grid.innerHTML = '<div class="empty-state"><span class="empty-icon">🌿</span><h3>No products yet</h3></div>';
+      return;
+    }
+    grid.innerHTML = featured.map(p => renderProductCard(p)).join('');
+  }
+
+  function renderAllProducts(filter) {
+    const grid = document.getElementById('all-products-grid');
+    let filtered = allProducts;
+    if (filter) filtered = allProducts.filter(p => p.category === filter);
+    if (!filtered.length) {
+      grid.innerHTML = '<div class="empty-state"><span class="empty-icon">🔍</span><h3>No products found</h3></div>';
+      return;
+    }
+    grid.innerHTML = filtered.map(p => renderProductCard(p)).join('');
+  }
+
+  function filterProducts(cat, btn) {
+    document.querySelectorAll('#filter-pills .pill').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = cat;
+    renderAllProducts(cat);
+  }
+
+  function heroSearch() {
+    const q = document.getElementById('hero-search-input').value.trim();
+    if (q) window.location.href = `products.html?q=${encodeURIComponent(q)}`;
+  }
+
+  function navSearch(val) {
+    if (val.length > 1) {
+      // Show inline result on products page
+      window.location.href = `products.html?q=${encodeURIComponent(val)}`;
+    }
+  }
+
+  document.getElementById('hero-search-input').addEventListener('keypress', e => {
+    if (e.key === 'Enter') heroSearch();
+  });
+</script>
+</body>
+</html>
