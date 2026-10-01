@@ -187,22 +187,6 @@ No external database is required to run the current version.
 
 ---
 
-## 📸 Project Screenshots
-
-Add only a few representative screenshots here rather than every page.
-
-Recommended screenshots:
-
-* Customer homepage / product listing
-* Login or registration
-* Shopping cart
-* Vendor dashboard
-* Admin dashboard
-
-Store the images in a `screenshots/` directory if you decide to add them.
-
----
-
 ## 🌱 Future Enhancements
 
 * Backend REST API
